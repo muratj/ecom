@@ -1,18 +1,15 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import { readFileSync } from 'fs';
-import { Pool } from 'pg';
+import productRoute from './routes/product.route';
+import helmet from 'helmet';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-const query = readFileSync('./tables.sql').toString();
-(async () => {
-  const pool = new Pool();
-  const res = await pool.query(query);
-  console.log(res);
-})();
+app.use(helmet());
+app.use(express.json());
+app.use('/api/products', productRoute);
 
 app.listen(PORT, () => console.log(`App is running on port ${PORT}`));
