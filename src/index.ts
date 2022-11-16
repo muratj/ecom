@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import productRoute from './routes/product.route';
 import helmet from 'helmet';
+import { logger } from './middlewares/logger';
 
 dotenv.config();
 
@@ -12,4 +13,4 @@ app.use(helmet());
 app.use(express.json());
 app.use('/api/products', productRoute);
 
-app.listen(PORT, () => console.log(`App is running on port ${PORT}`));
+app.listen(PORT, () => logger.info(`App is running on port ${PORT}`));
