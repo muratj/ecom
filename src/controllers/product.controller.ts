@@ -6,11 +6,13 @@ import {
   selectById,
   updateById,
 } from '../db';
+import { ProductDto } from '../dto/product.dto';
 
 export class ProductController {
   async createProduct(req: Request, res: Response) {
-    const newProduct = await insertInto('products', req.body);
-    res.json(newProduct);
+    const product = new ProductDto(req.body);
+    const newProduct = await insertInto('products', product);
+    res.status(201).json(newProduct);
   }
 
   async getProducts(req: Request, res: Response) {
@@ -24,10 +26,14 @@ export class ProductController {
   }
 
   async updateProduct(req: Request, res: Response) {
+    const product = await selectById('products', req.params.id);
+    const updateValues = Object.keys(req.body);
+    updateValues.forEach((k) => (product[k] = req.body[k]));
+    const productObj = new ProductDto(product);
     const updatedProduct = await updateById(
       'products',
       req.params.id,
-      req.body
+      productObj
     );
     res.json(updatedProduct);
   }
