@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { logger } from '../middlewares/logger';
 
 const pool = new Pool();
 
@@ -8,12 +9,17 @@ export const query = async (text: string, params: string[]) => {
 };
 
 export const insertInto = async (tableName: string, payload: Object) => {
-  const dataInfo = extractObjectInfo(payload);
-  const rows = await query(
-    `INSERT INTO ${tableName} (${dataInfo.keys}) VALUES (${dataInfo.valueOrder}) RETURNING *;`,
-    dataInfo.values
-  );
-  return rows[0];
+  try {
+    const dataInfo = extractObjectInfo(payload);
+    const rows = await query(
+      `INSERT INTO ${tableName} (${dataInfo.keys}) VALUES (${dataInfo.valueOrder}) RETURNING *;`,
+      dataInfo.values
+    );
+    return rows[0];
+  } catch (error: any) {
+    logger.error(error);
+    return error.message;
+  }
 };
 
 export const selectAll = async (tableName: string) => {
